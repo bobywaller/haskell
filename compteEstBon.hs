@@ -1,11 +1,13 @@
+import Data.List
+
 -- arithmitic operations
 data Op = Add | Sub | Mul | Div
 
 instance Show Op where
-show Add = "+"
-show Sub = "-"
-show Mul = "*"
-show Div = "/"
+  show Add = "+"
+  show Sub = "-"
+  show Mul = "*"
+  show Div = "/"
 
 valid :: Op -> Int -> Int -> Bool
 valid Add _ _ = True -- always true
@@ -16,11 +18,9 @@ valid Div x y = mod x y == 0 -- integer division only
 data Expr = Val Int | App Op Expr Expr
 
 instance Show Expr where
-show (Val x) = show x
-show (App op x y) = "(" ++ show x ++ show op ++ show y ++ ")"
+  show (Val x) = show x
+  show (App op x y) = "(" ++ show x ++ show op ++ show y ++ ")"
 
 values :: Expr -> [Int]
 values (Val n) = [n]
 values (App _ l r) = values l ++ values r
-
-solution :: [Int] -> Int -> Maybe Expr
