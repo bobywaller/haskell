@@ -51,4 +51,4 @@ ssens :: [a] -> [[a]]
 ssens = concat . map perms . subs
 
 solution :: Expr -> [Int] -> Int -> Maybe Expr
-solution ns n = [ e | ns' <- subbags ns, e <- exprs ns'), eval e == [n]] 
+solution ns n = Just [ e | ns' <- subbags ns, e <- exprs ns', eval e == [n]] | Nothing
