@@ -15,6 +15,13 @@ valid Sub x y = x > y -- do not allow for negative integers
 valid Mul _ _ = True -- always valid
 valid Div x y = mod x y == 0 -- integer division only
 
+valid' :: Op -> Int -> Int -> Bool
+valid' Add x y = x <= y -- always true
+valid' Sub x y = x > y -- do not allow for negative integers
+valid' Mul x y = x /= 1 && y /= 1 && x <= y  -- always valid
+valid' Div x y = y /= 1 && x `mod` y == 0 -- integer division only
+
+-- Apply an OP to two values
 calculate :: Op -> Int -> Int -> Int
 calculate Add x y = x + y
 calculate Sub x y = x - y
@@ -33,6 +40,10 @@ values (App _ l r) = values l ++ values r
 eval :: Expr -> [Int]
 eval (Val n) = [n | n > 0]
 eval (App o l r) = [calculate o x y | x <- eval l, y <- eval r, valid o x y]
+
+eval' :: Expr -> [Int]
+eval' (Val n) = [n | n > 0]
+eval' (App o l r) = [calculate o x y | x <- eval' l, y <- eval' r, valid' o x y]
 
 subs :: [a] -> [[a]]
 subs [] = [[]]
@@ -73,5 +84,11 @@ exprs ns  = [e | (ls,rs) <- split ns,
 solutions :: [Int] -> Int -> [Expr]
 solutions ns n = [ e | ns' <- ssens ns, e <- exprs ns', eval e == [n]]
 
+solutions' :: [Int] -> Int -> [Expr]
+solutions' ns n = [ e | ns' <- ssens ns, e <- exprs ns', eval' e == [n]]
+
 solution :: [Int] -> Int -> Maybe Expr
 solution ns x = listToMaybe (solutions ns x)
+
+solution' :: [Int] -> Int -> Maybe Expr
+solution' ns x = listToMaybe (solutions' ns x)
