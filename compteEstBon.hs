@@ -1,4 +1,5 @@
 import Data.List
+import Data.Maybe
 
 -- arithmitic operations
 data Op = Add | Sub | Mul | Div
@@ -50,5 +51,27 @@ perms (x:xs) = concat (map (interleave x) (perms xs))
 ssens :: [a] -> [[a]]
 ssens = concat . map perms . subs
 
-solution :: Expr -> [Int] -> Int -> Maybe Expr
-solution ns n = Just [ e | ns' <- subbags ns, e <- exprs ns', eval e == [n]] | Nothing
+split :: [a] -> [([a],[a])]
+split []     = []
+split [_]    = []
+split (x:xs) = ([x],xs) : [(x:ls,rs) | (ls,rs) <- split xs]
+
+ops :: [Op]
+ops = [Add, Sub, Mul, Div]
+
+combine :: Expr -> Expr -> [Expr]
+combine l r = [App o l r |o <- ops]
+
+exprs :: [Int] -> [Expr]
+exprs []  = []
+exprs [n] = [Val n]
+exprs ns  = [e | (ls,rs) <- split ns,
+  l <- exprs ls,
+  r <- exprs rs,
+  e <- combine l r]
+
+solutions :: [Int] -> Int -> [Expr]
+solutions ns n = [ e | ns' <- ssens ns, e <- exprs ns', eval e == [n]]
+
+solution :: [Int] -> Int -> Maybe Expr
+solution ns x = listToMaybe (solutions ns x)
