@@ -41,7 +41,7 @@ subs (x:xs) = yss ++ map (x:) yss
 
 
 interleave :: a -> [a] -> [[a]]
-interleave x [] = [[]]
+interleave x [] = [[x]]
 interleave x (y:ys) = (x:y:ys) : map (y:) (interleave x ys)
 
 perms :: [a] -> [[a]]
@@ -60,7 +60,7 @@ ops :: [Op]
 ops = [Add, Sub, Mul, Div]
 
 combine :: Expr -> Expr -> [Expr]
-combine l r = [App o l r |o <- ops]
+combine l r = [App o l r | o <- ops]
 
 exprs :: [Int] -> [Expr]
 exprs []  = []
